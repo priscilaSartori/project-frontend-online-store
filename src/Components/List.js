@@ -1,18 +1,27 @@
 import React from 'react';
-import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
+import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { getCategories, getProductsFromCategoryAndQuery } from '../services/api';
 
 class List extends React.Component {
-  state = { categoria: [], produtos: [], nome: '' };
-
-  componentDidMount() {
-    this.listCategory();
+  constructor() {
+    super();
+    this.state = {
+      categories: [],
+      produtos: [],
+      nome: '',
+    };
   }
 
-  listCategory = async () => {
-    const categories = await getCategories();
-    this.setState({ categoria: categories });
+  componentDidMount() {
+    this.salvandoCategorias();
+  }
+
+  salvandoCategorias = async () => {
+    const categorias = await getCategories();
+    this.setState({
+      categories: categorias,
+    });
   };
 
   onInputChange = (event) => {
@@ -20,21 +29,17 @@ class List extends React.Component {
     this.setState({ nome: value });
   };
 
-  onInputbutton = async () => {
+  onInputbutton = async ({ target }) => {
     const { nome } = this.state;
-    const inputCategory = await getProductsFromCategoryAndQuery(null, nome);
+    const inputCategory = await getProductsFromCategoryAndQuery(target.name, nome);
     const resultado = inputCategory.results;
     this.setState({ produtos: resultado });
-    console.log(resultado);
   };
 
   render() {
-    const { categoria, produtos, nome } = this.state;
+    const { categories, nome, produtos } = this.state;
     return (
       <div>
-        <Link data-testid="shopping-cart-button" to="/shoppingCart">
-          <AiOutlineShoppingCart />
-        </Link>
         <label htmlFor="query-input">
           <input
             data-testid="query-input"
@@ -52,16 +57,29 @@ class List extends React.Component {
             Enviar
           </button>
         </label>
-        { categoria.length === 0 ? (
+        <Link data-testid="shopping-cart-button" to="/shoppingCart">
+          <AiOutlineShoppingCart size={ 35 } color="rgb(0, 0, 0)" />
+        </Link>
+        {categories.length === 0 ? (
           <p data-testid="home-initial-message">
             Digite algum termo de pesquisa ou escolha uma
             categoria.
           </p>)
-          : (categoria.map(({ id }) => (
+          : (categories.map((categoria) => (
             <div
-              key={ id }
-              data-testid="category"
-            />
+              key={ categoria.id }
+            >
+              <div>
+                <button
+                  data-testid="category"
+                  type="button"
+                  name={ categoria.id }
+                  onClick={ this.onInputbutton }
+                >
+                  {categoria.name}
+                </button>
+              </div>
+            </div>
           )))}
         <section>
           {produtos.length === 0 ? <h2>Nenhum produto foi encontrado</h2>
@@ -81,5 +99,4 @@ class List extends React.Component {
     );
   }
 }
-
 export default List;
