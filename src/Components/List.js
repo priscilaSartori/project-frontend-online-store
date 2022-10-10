@@ -29,10 +29,9 @@ class List extends React.Component {
     this.setState({ nome: value });
   };
 
-  onInputbutton = async () => {
+  onInputbutton = async ({ target }) => {
     const { nome } = this.state;
-    console.log(nome);
-    const inputCategory = await getProductsFromCategoryAndQuery('', nome);
+    const inputCategory = await getProductsFromCategoryAndQuery(target.name, nome);
     const resultado = inputCategory.results;
     this.setState({ produtos: resultado });
   };
@@ -61,7 +60,7 @@ class List extends React.Component {
         <Link data-testid="shopping-cart-button" to="/shoppingCart">
           <AiOutlineShoppingCart size={ 35 } color="rgb(0, 0, 0)" />
         </Link>
-        { categories.length === 0 ? (
+        {categories.length === 0 ? (
           <p data-testid="home-initial-message">
             Digite algum termo de pesquisa ou escolha uma
             categoria.
@@ -69,12 +68,13 @@ class List extends React.Component {
           : (categories.map((categoria) => (
             <div
               key={ categoria.id }
-              data-testid="category"
             >
               <div>
                 <button
+                  data-testid="category"
                   type="button"
-                  onClick={ this.onButtonClick }
+                  name={ categoria.id }
+                  onClick={ this.onInputbutton }
                 >
                   {categoria.name}
                 </button>
@@ -99,5 +99,4 @@ class List extends React.Component {
     );
   }
 }
-
 export default List;
