@@ -57,7 +57,7 @@ class List extends React.Component {
   };
 
   render() {
-    const { categories, nome, produtos, loading, cartProducts } = this.state;
+    const { categories, nome, produtos, loading } = this.state;
     return (
       <div>
         <label htmlFor="query-input">
