@@ -106,22 +106,27 @@ class List extends React.Component {
           {produtos.length === 0 ? <h2>Nenhum produto foi encontrado</h2>
             : (
               produtos.map((prod) => (
-                <div
+                <Link
+                  to={ `/Card/${prod.id}` }
+                  data-testid="product-detail-link"
                   key={ prod.id }
-                  data-testid="product"
                 >
-                  <h2>{prod.title}</h2>
-                  <img src={ prod.thumbnail } alt="product" />
-                  <h2>{`R$ ${prod.price}`}</h2>
-                  <button
-                    data-testid="product-add-to-cart"
-                    type="button"
-                    name={ prod.id }
-                    onClick={ this.addCart }
+                  <div
+                    data-testid="product"
                   >
-                    Adicione ao Carrinho
-                  </button>
-                </div>
+                    <h2>{prod.title}</h2>
+                    <img src={ prod.thumbnail } alt="product" />
+                    <h2>{`R$ ${prod.price}`}</h2>
+                    <button
+                      data-testid="product-add-to-cart"
+                      type="button"
+                      name={ prod.id }
+                      onClick={ this.addCart }
+                    >
+                      Adicione ao Carrinho
+                    </button>
+                  </div>
+                </Link>
               )))}
         </section>
       </div>
