@@ -5,7 +5,6 @@ import { getProductById } from '../services/api';
 
 class Card extends React.Component {
   state = {
-    detalhes: {},
     email: '',
     comentario: '',
     rating: '',
