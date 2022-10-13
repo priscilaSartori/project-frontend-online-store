@@ -74,6 +74,7 @@ class Card extends React.Component {
     if (JSON.parse(localStorage.getItem(id)) !== null) {
       return JSON.parse(localStorage.getItem(id));
     }
+  };
 
   localStorage = () => {
     const { cartItems } = this.state;
