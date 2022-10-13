@@ -12,6 +12,8 @@ class Card extends React.Component {
     isValid: true,
     saveLocal: [],
     idSaveLocal: [],
+    detalhes: [],
+    cartItems: [],
   };
 
   componentDidMount() {
@@ -72,6 +74,19 @@ class Card extends React.Component {
     if (JSON.parse(localStorage.getItem(id)) !== null) {
       return JSON.parse(localStorage.getItem(id));
     }
+
+  localStorage = () => {
+    const { cartItems } = this.state;
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  };
+
+  salvarProdutoLS = () => {
+    const { detalhes: { title, price, thumbnail } } = this.state;
+    const itemSalvo = { title: `${title}`,
+      price: `${price}`,
+      img: `${thumbnail}` };
+    this.setState((prevState) => ({
+      cartItems: [...prevState.cartItems, itemSalvo] }), () => this.localStorage());
   };
 
   render() {
@@ -87,12 +102,20 @@ class Card extends React.Component {
         <h2 data-testid="product-detail-name">{title}</h2>
         <img src={ thumbnail } alt="detail-product" data-testid="product-detail-image" />
         <h2 data-testid="product-detail-price">{`R$ ${price}`}</h2>
+        <button
+          data-testid="product-detail-add-to-cart"
+          type="button"
+          onClick={ this.salvarProdutoLS }
+        >
+          Adicionar ao Carrinho
+        </button>
         <Link
           to="/shoppingCart"
         >
           <button
             data-testid="shopping-cart-button"
             type="button"
+            onClick={ this.salvarProdutoLS }
           >
             Comprar
           </button>

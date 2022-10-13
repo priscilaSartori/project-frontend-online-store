@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
+import { BsSearch } from 'react-icons/bs';
 import { getCategories, getProductsFromCategoryAndQuery } from '../services/api';
 
 class List extends React.Component {
@@ -10,6 +11,8 @@ class List extends React.Component {
       categories: [],
       produtos: [],
       nome: '',
+      loading: true,
+      cartProducts: [],
     };
   }
 
@@ -21,6 +24,7 @@ class List extends React.Component {
     const categorias = await getCategories();
     this.setState({
       categories: categorias,
+      loading: false,
     });
   };
 
@@ -30,14 +34,30 @@ class List extends React.Component {
   };
 
   onInputbutton = async ({ target }) => {
+    this.setState({ loading: true });
     const { nome } = this.state;
     const inputCategory = await getProductsFromCategoryAndQuery(target.name, nome);
     const resultado = inputCategory.results;
-    this.setState({ produtos: resultado });
+    this.setState({ produtos: resultado, nome: '', loading: false });
+  };
+
+  localStorage = () => {
+    const { cartProducts } = this.state;
+    localStorage.setItem('product', JSON.stringify(cartProducts));
+  };
+
+  addCart = ({ target: { name } }) => {
+    const { produtos } = this.state;
+    const product = produtos.find((produto) => produto.id.includes(name));
+    const add = { title: `${product.title}`,
+      img: `${product.thumbnail}`,
+      price: `${product.price}` };
+    this.setState((prevState) => ({ cartProducts: [...prevState
+      .cartProducts, add] }), () => this.localStorage());
   };
 
   render() {
-    const { categories, nome, produtos } = this.state;
+    const { categories, nome, produtos, loading } = this.state;
     return (
       <div>
         <label htmlFor="query-input">
@@ -54,17 +74,18 @@ class List extends React.Component {
             type="button"
             onClick={ this.onInputbutton }
           >
-            Enviar
+            <BsSearch />
           </button>
         </label>
         <Link data-testid="shopping-cart-button" to="/shoppingCart">
           <AiOutlineShoppingCart size={ 35 } color="rgb(0, 0, 0)" />
         </Link>
+        { loading && <h3>Carregando...</h3> }
         {categories.length === 0 ? (
-          <p data-testid="home-initial-message">
+          <h2 data-testid="home-initial-message">
             Digite algum termo de pesquisa ou escolha uma
             categoria.
-          </p>)
+          </h2>)
           : (categories.map((categoria) => (
             <div
               key={ categoria.id }
@@ -85,23 +106,33 @@ class List extends React.Component {
           {produtos.length === 0 ? <h2>Nenhum produto foi encontrado</h2>
             : (
               produtos.map((prod) => (
-                <Link
-                  to={ `/Card/${prod.id}` }
-                  data-testid="product-detail-link"
-                  key={ prod.id }
-                >
-                  <div
-                    data-testid="product"
+                <div key={ prod.id }>
+                  <Link
+                    to={ `/Card/${prod.id}` }
+                    data-testid="product-detail-link"
                   >
-                    <h2>{prod.title}</h2>
-                    <img src={ prod.thumbnail } alt="product" />
-                    <h2>{`R$ ${prod.price}`}</h2>
-                  </div>
-                </Link>
+                    <div
+                      data-testid="product"
+                    >
+                      <h2>{prod.title}</h2>
+                      <img src={ prod.thumbnail } alt="product" />
+                      <h2>{`R$ ${prod.price}`}</h2>
+                    </div>
+                  </Link>
+                  <button
+                    data-testid="product-add-to-cart"
+                    type="button"
+                    name={ prod.id }
+                    onClick={ this.addCart }
+                  >
+                    Adicione ao Carrinho
+                  </button>
+                </div>
               )))}
         </section>
       </div>
     );
   }
 }
+
 export default List;
