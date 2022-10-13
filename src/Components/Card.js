@@ -4,7 +4,10 @@ import PropTypes from 'prop-types';
 import { getProductById } from '../services/api';
 
 class Card extends React.Component {
-  state = { detalhes: '' };
+  state = {
+    detalhes: [],
+    cartItems: [],
+  };
 
   componentDidMount() {
     this.productDetails();
@@ -18,6 +21,20 @@ class Card extends React.Component {
     });
   };
 
+  localStorage = () => {
+    const { cartItems } = this.state;
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  };
+
+  salvarProdutoLS = () => {
+    const { detalhes: { title, price, thumbnail } } = this.state;
+    const itemSalvo = { title: `${title}`,
+      price: `${price}`,
+      img: `${thumbnail}` };
+    this.setState((prevState) => ({
+      cartItems: [...prevState.cartItems, itemSalvo] }), () => this.localStorage());
+  };
+
   render() {
     const { detalhes: { title, price, thumbnail } } = this.state;
     return (
@@ -25,12 +42,20 @@ class Card extends React.Component {
         <h2 data-testid="product-detail-name">{title}</h2>
         <img src={ thumbnail } alt="detail-product" data-testid="product-detail-image" />
         <h2 data-testid="product-detail-price">{`R$ ${price}`}</h2>
+        <button
+          data-testid="product-detail-add-to-cart"
+          type="button"
+          onClick={ this.salvarProdutoLS }
+        >
+          Adicionar ao Carrinho
+        </button>
         <Link
           to="/shoppingCart"
         >
           <button
             data-testid="shopping-cart-button"
             type="button"
+            onClick={ this.salvarProdutoLS }
           >
             Comprar
           </button>
