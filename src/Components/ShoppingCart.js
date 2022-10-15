@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 class ShoppingCart extends React.Component {
   showInCart = () => {
@@ -31,11 +32,13 @@ class ShoppingCart extends React.Component {
     const produtoSalvo = this.detailProduct();
     return (
       <div>
-        {Object.keys(localStorage).length === 0 && (
-          <h3 data-testid="shopping-cart-empty-message">
-            Seu carrinho está vazio
-          </h3>
-        )}
+        {Object.keys(localStorage) !== 'cartItens'
+          && Object.keys(localStorage) !== 'products'
+          && (
+            <h3 data-testid="shopping-cart-empty-message">
+              Seu carrinho está vazio
+            </h3>
+          )}
         {localStorage.getItem('product') !== null
           && (
             showProduct.map((product, i) => (
@@ -75,6 +78,9 @@ class ShoppingCart extends React.Component {
                 </p>
               </section>
             )}
+        <Link to="/Checkout">
+          <button data-testid="checkout-products" type="button">Finalizar Compra</button>
+        </Link>
       </div>
     );
   }
