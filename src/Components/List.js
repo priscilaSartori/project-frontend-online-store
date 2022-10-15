@@ -117,6 +117,8 @@ class List extends React.Component {
                       <h2>{prod.title}</h2>
                       <img src={ prod.thumbnail } alt="product" />
                       <h2>{`R$ ${prod.price}`}</h2>
+                      {prod.shipping.free_shipping === true
+                        && <h2 data-testid="free-shipping">Frete Grátis</h2>}
                     </div>
                   </Link>
                   <button
