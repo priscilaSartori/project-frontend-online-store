@@ -19,9 +19,22 @@ class Checkout extends React.Component {
   };
 
   showInCart = () => {
-    const getItem = JSON.parse(localStorage.getItem('product'));
-    if (getItem !== null) {
-      return getItem;
+    if (JSON.parse(localStorage.getItem('product')) === null
+    && JSON.parse(localStorage.getItem('cartItems')) === null) {
+      return undefined;
+    }
+    if (JSON.parse(localStorage.getItem('product')) !== null
+    && JSON.parse(localStorage.getItem('cartItems')) !== null) {
+      const getItem = JSON.parse(localStorage.getItem('product'));
+      const list = JSON.parse(localStorage.getItem('cartItems'))[0];
+      if (getItem.some((item) => item.id === list.id)) {
+        return getItem;
+      } return getItem.concat(list);
+    } if (JSON.parse(localStorage.getItem('product')) === null) {
+      const list = [JSON.parse(localStorage.getItem('cartItems'))[0]];
+      return list;
+    } if (JSON.parse(localStorage.getItem('cartItems')) === null) {
+      return JSON.parse(localStorage.getItem('product'));
     }
   };
 
@@ -61,9 +74,7 @@ class Checkout extends React.Component {
           </div>
         </section>
         <section>
-          <form
-            onSubmit={ this.submitForm }
-          >
+          <form>
             <div>
               Informações do Comprador:
               <input
@@ -157,8 +168,9 @@ class Checkout extends React.Component {
               />
             </div>
             <button
-              type="submit"
+              type="button"
               data-testid="checkout-btn"
+              onClick={ this.submitForm }
             >
               Comprar
             </button>

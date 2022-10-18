@@ -81,10 +81,11 @@ class Card extends React.Component {
   };
 
   salvarProdutoLS = () => {
-    const { detalhes: { title, price, thumbnail } } = this.state;
+    const { detalhes: { title, price, thumbnail, id } } = this.state;
     const itemSalvo = { title: `${title}`,
       price: `${price}`,
       img: `${thumbnail}`,
+      id: `${id}`,
     };
     this.setState((prevState) => ({
       cartItems: [...prevState.cartItems, itemSalvo] }), () => this.localStorage());

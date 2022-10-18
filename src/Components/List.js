@@ -47,13 +47,23 @@ class List extends React.Component {
   };
 
   addCart = ({ target: { name } }) => {
-    const { produtos } = this.state;
+    const { produtos, cartProducts } = this.state;
     const product = produtos.find((produto) => produto.id.includes(name));
-    const add = { title: `${product.title}`,
-      img: `${product.thumbnail}`,
-      price: `${product.price}` };
-    this.setState((prevState) => ({ cartProducts: [...prevState
-      .cartProducts, add] }), () => this.localStorage());
+    if (cartProducts.find((cart) => cart.id === name)) {
+      const count = cartProducts.find((prod) => prod.id === name);
+      count.amount += 1;
+      this.setState({ cartProducts }, () => this.localStorage());
+    } else {
+      const add = { title: `${product.title}`,
+        img: `${product.thumbnail}`,
+        price: `${product.price}`,
+        amount: 1,
+        id: `${name}`,
+        inventory: `${product.available_quantity}` };
+      this.setState((prevState) => ({
+        cartProducts: [...prevState
+          .cartProducts, add] }), () => this.localStorage());
+    }
   };
 
   render() {
@@ -80,7 +90,6 @@ class List extends React.Component {
         <Link data-testid="shopping-cart-button" to="/shoppingCart">
           <AiOutlineShoppingCart size={ 35 } color="rgb(0, 0, 0)" />
         </Link>
-        { loading && <h3>Carregando...</h3> }
         {categories.length === 0 ? (
           <h2 data-testid="home-initial-message">
             Digite algum termo de pesquisa ou escolha uma
@@ -103,6 +112,7 @@ class List extends React.Component {
             </div>
           )))}
         <section>
+          { loading && <h3>Carregando...</h3> }
           {produtos.length === 0 ? <h2>Nenhum produto foi encontrado</h2>
             : (
               produtos.map((prod) => (
