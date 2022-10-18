@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { getProductById } from '../services/api';
 
 class Card extends React.Component {
@@ -81,13 +82,25 @@ class Card extends React.Component {
   };
 
   salvarProdutoLS = () => {
-    const { detalhes: { title, price, thumbnail } } = this.state;
+    const { detalhes: { title, price, thumbnail, id } } = this.state;
     const itemSalvo = { title: `${title}`,
       price: `${price}`,
       img: `${thumbnail}`,
+      id: `${id}`,
     };
     this.setState((prevState) => ({
       cartItems: [...prevState.cartItems, itemSalvo] }), () => this.localStorage());
+  };
+
+  sum = () => {
+    const amountCart = Number(localStorage.getItem('cart'));
+    const { cartItems } = this.state;
+    const total = amountCart + 1;
+    if (cartItems.length === 0) {
+      return amountCart;
+    }
+    localStorage.setItem('cart', total);
+    return total;
   };
 
   render() {
@@ -110,17 +123,15 @@ class Card extends React.Component {
         >
           Adicionar ao Carrinho
         </button>
-        <Link
-          to="/shoppingCart"
-        >
-          <button
+        <div>
+          <Link
             data-testid="shopping-cart-button"
-            type="button"
-            onClick={ this.salvarProdutoLS }
+            to="/shoppingCart"
           >
-            Comprar
-          </button>
-        </Link>
+            <AiOutlineShoppingCart size={ 35 } color="rgb(0, 0, 0)" />
+            { this.sum() }
+          </Link>
+        </div>
         <form
           onSubmit={ this.salveEvaluation }
         >
