@@ -66,6 +66,16 @@ class List extends React.Component {
     }
   };
 
+  sum = () => {
+    const { cartProducts } = this.state;
+    if (cartProducts.length > 0) {
+      const newArray = cartProducts.map((element) => element.amount);
+      const amountCart = newArray.reduce((acc, curr) => acc + curr, 0);
+      localStorage.setItem('cart', amountCart);
+      return amountCart;
+    } return 0;
+  };
+
   render() {
     const { categories, nome, produtos, loading } = this.state;
     return (
@@ -87,9 +97,15 @@ class List extends React.Component {
             <BsSearch />
           </button>
         </label>
-        <Link data-testid="shopping-cart-button" to="/shoppingCart">
-          <AiOutlineShoppingCart size={ 35 } color="rgb(0, 0, 0)" />
-        </Link>
+        <div data-testid="shopping-cart-size">
+          <Link
+            data-testid="shopping-cart-button"
+            to="/shoppingCart"
+          >
+            <AiOutlineShoppingCart size={ 35 } color="rgb(0, 0, 0)" />
+            { this.sum() }
+          </Link>
+        </div>
         {categories.length === 0 ? (
           <h2 data-testid="home-initial-message">
             Digite algum termo de pesquisa ou escolha uma
