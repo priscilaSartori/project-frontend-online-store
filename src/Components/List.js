@@ -98,10 +98,7 @@ class List extends React.Component {
           </button>
         </label>
         <div data-testid="shopping-cart-size">
-          <Link
-            data-testid="shopping-cart-button"
-            to="/shoppingCart"
-          >
+          <Link data-testid="shopping-cart-button" to="/shoppingCart">
             <AiOutlineShoppingCart size={ 35 } color="rgb(0, 0, 0)" />
             { this.sum() }
           </Link>

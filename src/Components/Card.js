@@ -123,7 +123,7 @@ class Card extends React.Component {
         >
           Adicionar ao Carrinho
         </button>
-        <div data-testid="shopping-cart-size">
+        <div>
           <Link
             data-testid="shopping-cart-button"
             to="/shoppingCart"

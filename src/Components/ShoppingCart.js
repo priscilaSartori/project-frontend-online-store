@@ -72,8 +72,10 @@ class ShoppingCart extends React.Component {
     if (target.id === 'product') {
       const { products } = this.state;
       const getAmount = products.find((product) => product.id === target.value);
-      getAmount.amount += 1;
-      this.setState({ products });
+      if (getAmount.amount < getAmount.inventory) {
+        getAmount.amount += 1;
+        this.setState({ products });
+      }
     }
     if (target.id === 'cart') {
       const { cartAmount } = this.state;
