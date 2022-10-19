@@ -124,15 +124,15 @@ class Card extends React.Component {
         >
           Adicionar ao Carrinho
         </button>
-        <div>
-          <Link
-            data-testid="shopping-cart-button"
-            to="/shoppingCart"
-          >
-            <AiOutlineShoppingCart size={ 35 } color="rgb(0, 0, 0)" />
+        <Link
+          data-testid="shopping-cart-button"
+          to="/shoppingCart"
+        >
+          <span data-testid="shopping-cart-size">
             {sum}
-          </Link>
-        </div>
+            <AiOutlineShoppingCart size={ 35 } color="rgb(0, 0, 0)" />
+          </span>
+        </Link>
         <form
           onSubmit={ this.salveEvaluation }
         >
