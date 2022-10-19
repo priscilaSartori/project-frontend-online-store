@@ -11,20 +11,24 @@ class List extends React.Component {
       categories: [],
       produtos: [],
       nome: '',
-      loading: true,
+      // loading: true,
       cartProducts: [],
+      sum: 0,
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.salvandoCategorias();
+    const getProduct = await JSON.parse(localStorage.getItem('product')) || [];
+    const getCart = await JSON.parse(localStorage.getItem('cart')) || [];
+    this.setState({ cartProducts: getProduct, sum: getCart });
   }
 
   salvandoCategorias = async () => {
     const categorias = await getCategories();
     this.setState({
       categories: categorias,
-      loading: false,
+      // loading: false,
     });
   };
 
@@ -34,50 +38,55 @@ class List extends React.Component {
   };
 
   onInputbutton = async ({ target }) => {
-    this.setState({ loading: true });
+    // this.setState({ loading: true });
     const { nome } = this.state;
     const inputCategory = await getProductsFromCategoryAndQuery(target.name, nome);
     const resultado = inputCategory.results;
-    this.setState({ produtos: resultado, nome: '', loading: false });
+    this.setState({ produtos: resultado, nome: '',
+    // loading: false
+    });
   };
 
-  localStorage = () => {
+  localStorageAndProdutSum = () => {
     const { cartProducts } = this.state;
     localStorage.setItem('product', JSON.stringify(cartProducts));
+    this.setState({ sum: this.sum() });
   };
 
-  addCart = ({ target: { name } }) => {
+  addCart = ({ target: { id } }) => {
     const { produtos, cartProducts } = this.state;
-    const product = produtos.find((produto) => produto.id.includes(name));
-    if (cartProducts.find((cart) => cart.id === name)) {
-      const count = cartProducts.find((prod) => prod.id === name);
+    const product = produtos.find((produto) => produto.id.includes(id));
+    if (cartProducts.find((cart) => cart.id === id)) {
+      const count = cartProducts.find((prod) => prod.id === id);
       count.amount += 1;
-      this.setState({ cartProducts }, () => this.localStorage());
+      this.setState({ cartProducts }, () => this.localStorageAndProdutSum());
     } else {
-      const add = { title: `${product.title}`,
-        img: `${product.thumbnail}`,
-        price: `${product.price}`,
+      const add = {
+        title: product.title,
+        img: product.thumbnail,
+        price: product.price,
         amount: 1,
-        id: `${name}`,
-        inventory: `${product.available_quantity}` };
+        id,
+        inventory: product.available_quantity,
+      };
       this.setState((prevState) => ({
         cartProducts: [...prevState
-          .cartProducts, add] }), () => this.localStorage());
+          .cartProducts, add],
+      }), () => this.localStorageAndProdutSum());
     }
   };
 
   sum = () => {
     const { cartProducts } = this.state;
-    if (cartProducts.length > 0) {
-      const newArray = cartProducts.map((element) => element.amount);
-      const amountCart = newArray.reduce((acc, curr) => acc + curr, 0);
-      localStorage.setItem('cart', amountCart);
-      return amountCart;
-    } return 0;
+    const newArray = cartProducts.map((element) => element.amount);
+    const amountCart = newArray.reduce((acc, curr) => acc + curr, 0);
+    this.setState({ sum: amountCart });
+    localStorage.setItem('cart', amountCart);
+    return amountCart;
   };
 
   render() {
-    const { categories, nome, produtos, loading } = this.state;
+    const { categories, nome, produtos, sum } = this.state;
     return (
       <div>
         <label htmlFor="query-input">
@@ -97,12 +106,12 @@ class List extends React.Component {
             <BsSearch />
           </button>
         </label>
-        <div data-testid="shopping-cart-size">
-          <Link data-testid="shopping-cart-button" to="/shoppingCart">
-            <AiOutlineShoppingCart size={ 35 } color="rgb(0, 0, 0)" />
-            { this.sum() }
-          </Link>
-        </div>
+        <Link data-testid="shopping-cart-button" to="/shoppingCart">
+          <span data-testid="shopping-cart-size">
+            {sum}
+          </span>
+          <AiOutlineShoppingCart size={ 35 } color="rgb(0, 0, 0)" />
+        </Link>
         {categories.length === 0 ? (
           <h2 data-testid="home-initial-message">
             Digite algum termo de pesquisa ou escolha uma
@@ -125,29 +134,29 @@ class List extends React.Component {
             </div>
           )))}
         <section>
-          { loading && <h3>Carregando...</h3> }
+          {/* {loading && <h3>Carregando...</h3>} */}
           {produtos.length === 0 ? <h2>Nenhum produto foi encontrado</h2>
             : (
               produtos.map((prod) => (
-                <div key={ prod.id }>
+                <div
+                  data-testid="product"
+                  key={ prod.id }
+                >
                   <Link
                     to={ `/Card/${prod.id}` }
                     data-testid="product-detail-link"
                   >
-                    <div
-                      data-testid="product"
-                    >
-                      <h2>{prod.title}</h2>
-                      <img src={ prod.thumbnail } alt="product" />
-                      <h2>{`R$ ${prod.price}`}</h2>
-                      {prod.shipping.free_shipping === true
+                    <h2>{prod.title}</h2>
+                    <img src={ prod.thumbnail } alt="product" />
+                    <h2>{`R$ ${prod.price}`}</h2>
+                    {prod.shipping.free_shipping === true
                         && <h2 data-testid="free-shipping">Frete Grátis</h2>}
-                    </div>
                   </Link>
                   <button
                     data-testid="product-add-to-cart"
                     type="button"
-                    name={ prod.id }
+                    name={ prod.title }
+                    id={ prod.id }
                     onClick={ this.addCart }
                   >
                     Adicione ao Carrinho

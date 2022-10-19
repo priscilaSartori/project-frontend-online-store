@@ -14,10 +14,13 @@ class Card extends React.Component {
     idSaveLocal: [],
     detalhes: [],
     cartItems: [],
+    sum: 0,
   };
 
   componentDidMount() {
     this.productDetails();
+    const letCart = JSON.parse(localStorage.getItem('cart')) || [];
+    this.setState({ sum: letCart });
   }
 
   productDetails = async () => {
@@ -79,28 +82,25 @@ class Card extends React.Component {
   localStorage = () => {
     const { cartItems } = this.state;
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    this.setState({ sum: this.sum() });
   };
 
   salvarProdutoLS = () => {
     const { detalhes: { title, price, thumbnail, id } } = this.state;
-    const itemSalvo = { title: `${title}`,
-      price: `${price}`,
-      img: `${thumbnail}`,
-      id: `${id}`,
-    };
+    const itemSalvo = { title, price, img: thumbnail, id, amount: 1 };
     this.setState((prevState) => ({
-      cartItems: [...prevState.cartItems, itemSalvo] }), () => this.localStorage());
+      cartItems: [...prevState.cartItems, itemSalvo],
+    }), () => this.localStorage());
   };
 
   sum = () => {
-    const amountCart = Number(localStorage.getItem('cart'));
     const { cartItems } = this.state;
-    const total = amountCart + 1;
-    if (cartItems.length === 0) {
-      return amountCart;
-    }
-    localStorage.setItem('cart', total);
-    return total;
+    const letCart = JSON.parse(localStorage.getItem('cart')) || [];
+    const newArray = cartItems.map((element) => element.amount);
+    const amountCart = newArray.reduce((acc, curr) => acc + curr, 0);
+    const resultSoma = letCart + amountCart;
+    this.setState({ sum: resultSoma });
+    return resultSoma;
   };
 
   render() {
@@ -109,6 +109,7 @@ class Card extends React.Component {
       email,
       comentario,
       isValid,
+      sum,
     } = this.state;
     const getIdSaveLocal = this.getEvaluation();
     return (
@@ -129,7 +130,7 @@ class Card extends React.Component {
             to="/shoppingCart"
           >
             <AiOutlineShoppingCart size={ 35 } color="rgb(0, 0, 0)" />
-            { this.sum() }
+            {sum}
           </Link>
         </div>
         <form
@@ -219,16 +220,16 @@ class Card extends React.Component {
           </button>
         </form>
         <section>
-          { isValid === false && <h2 data-testid="error-msg">Campos inválidos</h2>}
-          { getIdSaveLocal !== undefined
-          && (
-            getIdSaveLocal.map((aval, index) => (
-              <div key={ index }>
-                <p data-testid="review-card-email">{aval.email}</p>
-                <p data-testid="review-card-rating">{aval.rating}</p>
-                <p data-testid="review-card-evaluation">{aval.comentario}</p>
-              </div>
-            )))}
+          {isValid === false && <h2 data-testid="error-msg">Campos inválidos</h2>}
+          {getIdSaveLocal !== undefined
+            && (
+              getIdSaveLocal.map((aval, index) => (
+                <div key={ index }>
+                  <p data-testid="review-card-email">{aval.email}</p>
+                  <p data-testid="review-card-rating">{aval.rating}</p>
+                  <p data-testid="review-card-evaluation">{aval.comentario}</p>
+                </div>
+              )))}
         </section>
       </div>
     );

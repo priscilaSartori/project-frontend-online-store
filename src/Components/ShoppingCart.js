@@ -113,7 +113,9 @@ class ShoppingCart extends React.Component {
               Seu carrinho está vazio
             </h3>
           )}
-        {localStorage.getItem('product') !== null
+        {
+        // localStorage.getItem('product') !== null
+          products.length !== 0
           && (
             products.map((product, i) => (
               <div
@@ -158,7 +160,8 @@ class ShoppingCart extends React.Component {
                   Remover Produto
                 </button>
               </div>
-            )))}
+            )))
+        }
         { show && (
           <section>
             <div>
